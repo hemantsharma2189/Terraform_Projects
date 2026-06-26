@@ -1,0 +1,39 @@
+Secure Server Inventory Generator using Terraform
+
+Project Overview:
+This project demonstrates Infrastructure as Code (IaC) principles using Terraform by automatically generating a structured server inventory report on a local machine without requiring any cloud account.
+
+The solution uses Terraform variables, local values, templates, and providers to dynamically create server records and generate a security-focused inventory document. Instead of manually maintaining server documentation, Terraform automates the process, ensuring consistency and reducing administrative effort.
+
+Key Features:
+- Automated server inventory generation using Terraform
+- Dynamic server naming with the Random Provider
+- Configurable environment, server count, and ownership details
+- Template-based report generation using Terraform templatefile()
+- Local file creation using the Local Provider
+- Security-focused server metadata including SSH access status and server state
+- Reusable and scalable Infrastructure as Code design
+
+How It Works:
+1. User-defined variables specify the environment, server count, and owner information.
+2. Terraform generates unique server names using the Random Provider.
+3. Local values create a structured list of server objects containing security-related attributes.
+4. The templatefile() function processes the server data and populates a Markdown inventory template.
+5. The Local Provider creates a server inventory report automatically in the generated directory.
+6. Terraform outputs display the generated server names and inventory file location.
+
+Terraform Concepts Demonstrated:
+- Providers
+- Variables
+- Locals
+- Loops and Iteration
+- Template Files
+- Resource Creation
+- Outputs
+- Infrastructure as Code (IaC)
+
+Skills Demonstrated:
+Terraform, Infrastructure as Code (IaC), Automation, Configuration Management, Security Documentation, DevOps Fundamentals, Cloud Engineering Concepts, Infrastructure Automation
+
+Business Value:
+Organizations often maintain server inventories manually, which can lead to inconsistencies and outdated records. This project demonstrates how Terraform can automate infrastructure documentation processes, improve operational efficiency, and support security and compliance initiatives through standardized inventory management.
