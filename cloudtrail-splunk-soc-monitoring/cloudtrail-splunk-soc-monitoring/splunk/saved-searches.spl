@@ -1,0 +1,43 @@
+# Splunk SPL Searches for AWS CloudTrail SOC Monitoring
+
+# 1. Failed AWS Console Login
+index=aws_cloudtrail eventName=ConsoleLogin responseElements.ConsoleLoginFailure="Failure"
+| table _time userIdentity.arn sourceIPAddress userAgent eventName errorMessage
+
+# 2. Unauthorized API Calls
+index=aws_cloudtrail (errorCode="AccessDenied" OR errorCode="UnauthorizedOperation")
+| stats count by userIdentity.arn eventName sourceIPAddress errorCode
+| sort - count
+
+# 3. Suspicious IAM Activity
+index=aws_cloudtrail eventSource=iam.amazonaws.com
+(eventName=CreatePolicy OR eventName=AttachUserPolicy OR eventName=PutUserPolicy OR eventName=CreateAccessKey OR eventName=UpdateAssumeRolePolicy)
+| table _time userIdentity.arn eventName sourceIPAddress requestParameters
+
+# 4. Root Account Usage
+index=aws_cloudtrail userIdentity.type="Root"
+| table _time userIdentity.type userIdentity.arn eventName sourceIPAddress userAgent
+
+# 5. Security Group Rule Changes
+index=aws_cloudtrail eventSource=ec2.amazonaws.com
+(eventName=AuthorizeSecurityGroupIngress OR eventName=AuthorizeSecurityGroupEgress OR eventName=RevokeSecurityGroupIngress OR eventName=RevokeSecurityGroupEgress)
+| table _time userIdentity.arn eventName sourceIPAddress requestParameters
+
+# 6. CloudTrail Logging Disabled or Modified
+index=aws_cloudtrail eventSource=cloudtrail.amazonaws.com
+(eventName=StopLogging OR eventName=DeleteTrail OR eventName=UpdateTrail)
+| table _time userIdentity.arn eventName sourceIPAddress requestParameters
+
+# 7. Access Key Creation
+index=aws_cloudtrail eventSource=iam.amazonaws.com eventName=CreateAccessKey
+| table _time userIdentity.arn eventName sourceIPAddress requestParameters.userName
+
+# 8. Top AWS API Events
+index=aws_cloudtrail
+| stats count by eventName
+| sort - count
+
+# 9. Top Source IP Addresses
+index=aws_cloudtrail
+| stats count by sourceIPAddress
+| sort - count

@@ -1,0 +1,40 @@
+<dashboard version="1.1">
+  <label>AWS CloudTrail SOC Monitoring Dashboard</label>
+  <description>Dashboard for monitoring AWS CloudTrail security events in Splunk.</description>
+  <row>
+    <panel>
+      <title>Unauthorized API Calls</title>
+      <table>
+        <search>
+          <query>index=aws_cloudtrail (errorCode="AccessDenied" OR errorCode="UnauthorizedOperation") | stats count by userIdentity.arn eventName sourceIPAddress errorCode | sort - count</query>
+        </search>
+      </table>
+    </panel>
+    <panel>
+      <title>Failed Console Logins</title>
+      <table>
+        <search>
+          <query>index=aws_cloudtrail eventName=ConsoleLogin responseElements.ConsoleLoginFailure="Failure" | table _time userIdentity.arn sourceIPAddress userAgent eventName</query>
+        </search>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>IAM Changes</title>
+      <table>
+        <search>
+          <query>index=aws_cloudtrail eventSource=iam.amazonaws.com (eventName=CreatePolicy OR eventName=AttachUserPolicy OR eventName=PutUserPolicy OR eventName=CreateAccessKey OR eventName=UpdateAssumeRolePolicy) | table _time userIdentity.arn eventName sourceIPAddress requestParameters</query>
+        </search>
+      </table>
+    </panel>
+    <panel>
+      <title>Root Account Activity</title>
+      <table>
+        <search>
+          <query>index=aws_cloudtrail userIdentity.type="Root" | table _time userIdentity.type userIdentity.arn eventName sourceIPAddress userAgent</query>
+        </search>
+      </table>
+    </panel>
+  </row>
+</dashboard>
